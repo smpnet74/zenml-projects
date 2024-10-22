@@ -245,7 +245,7 @@ def get_db_password() -> str:
         str: The password for the PostgreSQL database.
     """
     password = os.getenv("ZENML_POSTGRES_DB_PASSWORD")
-    if not password:
+    if password is None or password == "":
         from zenml.client import Client
 
         password = (
@@ -275,6 +275,7 @@ def get_db_conn() -> connection:
         "host": local_database_connection["host"],
         "port": local_database_connection["port"],
         "dbname": "postgres",
+        "connect_timeout": 10,  # Set timeout to 10 seconds
     }
 
     return psycopg2.connect(**CONNECTION_DETAILS)
@@ -458,3 +459,4 @@ def process_input_with_retrieval(
     ]
     logger.debug("CONTEXT USED\n\n", messages[2]["content"], "\n\n")
     return get_completion_from_messages(messages, model=model)
+

@@ -66,7 +66,7 @@ def get_all_pages(url: str) -> List[str]:
     return list(pages)
 
 
-def crawl(url: str, base: str, visited: Set[str] = None) -> Set[str]:
+def crawl(url: str, base: str, visited: Set[str] = None, max_links: int = 10) -> Set[str]:  ##edit1
     """
     Recursively crawl a URL and its links, retrieving all valid links with the same base.
 
@@ -80,6 +80,9 @@ def crawl(url: str, base: str, visited: Set[str] = None) -> Set[str]:
     """
     if visited is None:
         visited = set()
+    
+    if len(visited) >= max_links:  ## edit2
+        return visited
 
     visited.add(url)
     logger.debug(f"Crawling URL: {url}")
@@ -87,7 +90,9 @@ def crawl(url: str, base: str, visited: Set[str] = None) -> Set[str]:
 
     for link in links:
         if link not in visited:
-            visited.update(crawl(link, base, visited))
+            visited.update(crawl(link, base, visited, max_links))
+            if len(visited) >= max_links:  ##edit 3
+                break ##Edit 3
             sleep(1 / RATE_LIMIT)  # Rate limit the recursive calls
 
     return visited

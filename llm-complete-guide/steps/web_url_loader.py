@@ -35,17 +35,21 @@ def web_url_loader(
     """
     documents = []
     for url in urls:
-        elements = partition_html(url=url)
-        text = "\n\n".join([str(el) for el in elements])
+        try:
+            elements = partition_html(url=url)
+            text = "\n\n".join([str(el) for el in elements])
 
-        parent_section = extract_parent_section(url)
+            parent_section = extract_parent_section(url)
 
-        document = Document(
-            page_content=text,
-            url=url,
-            filename=url,
-            parent_section=parent_section,
-        )
-        documents.append(document)
+            document = Document(
+                page_content=text,
+                url=url,
+                filename=url,
+                parent_section=parent_section,
+            )
+            documents.append(document)
+        except Exception as e:
+            print(f"Error loading URL {url}: {e}")
+            continue
 
     return documents

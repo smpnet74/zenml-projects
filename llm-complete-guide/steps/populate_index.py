@@ -22,6 +22,7 @@
 import logging
 import math
 from typing import Annotated, List
+import sys
 
 from constants import (
     CHUNK_OVERLAP,
@@ -37,6 +38,7 @@ from zenml import ArtifactConfig, log_artifact_metadata, step
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+sys.setrecursionlimit(10000)
 
 
 @step
@@ -92,8 +94,9 @@ def generate_embeddings(
         Exception: If an error occurs during the generation of embeddings.
     """
     try:
-        model = SentenceTransformer(EMBEDDINGS_MODEL)
+        model = SentenceTransformer(EMBEDDINGS_MODEL, cache_folder='/tmp')
 
+        '''
         log_artifact_metadata(
             artifact_name="embeddings",
             metadata={
@@ -101,6 +104,7 @@ def generate_embeddings(
                 "embedding_dimensionality": EMBEDDING_DIMENSIONALITY,
             },
         )
+        '''
 
         document_texts = [doc.page_content for doc in split_documents]
         embeddings = model.encode(document_texts)

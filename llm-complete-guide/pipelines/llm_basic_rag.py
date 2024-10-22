@@ -13,7 +13,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+#''', requirements="./requirements.txt"''')
+from zenml.config import DockerSettings
+docker_settings = DockerSettings(
+    prevent_build_reuse=False, 
+    requirements="./requirements.txt",
+    environment={
+        "ZENML_POSTGRES_HOST": "aws-0-us-east-1.pooler.supabase.com",
+        "ZENML_POSTGRES_PORT": "5432",
+        "ZENML_POSTGRES_USER": "postgres.iluaihfetmkegysslmxu"
+    }
+)
 
 from steps.populate_index import (
     generate_embeddings,
@@ -25,7 +35,8 @@ from steps.web_url_loader import web_url_loader
 from zenml import pipeline
 
 
-@pipeline
+@pipeline(settings={"docker": docker_settings})
+#@pipeline
 def llm_basic_rag() -> None:
     """Executes the pipeline to train a basic RAG model.
 
